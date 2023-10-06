@@ -7,8 +7,58 @@
 GET http://localhost:8083/
 
 #### Response:
-html
-and JSON
+
+```
+{
+  "@context": {
+    "@vocab": "https://www.w3.org/2019/wot/hypermedia#",
+    "forms": {
+      "@id": "Form"
+    },
+    "href": {
+      "@id": "hasTarget"
+    },
+    "htv": "http://www.w3.org/2011/http#",
+    "links": {
+      "@id": "Link"
+    },
+    "rel": {
+      "@id": "hasRelationType",
+      "@type": "@vocab"
+    },
+    "sch": "https://schema.org/#",
+    "ttt": "http://localhost:8083/tic-tac-toe#",
+    "wot": "https://w3c.github.io/wot-thing-description/#"
+  },
+  "@id": "tic-tac-toe",
+  "@type": "http://localhost:8083",
+  "forms": [
+    {
+      "contentType": "application/json",
+      "href": "http://localhost:8083/register",
+      "htv:methodName": "POST",
+      "properties": [
+        {
+          "name": "ttt:Agent",
+          "readOnly": false,
+          "required": true
+        }
+      ],
+      "wot:op": "readproperty"
+    }
+  ],
+  "links": [
+    {
+      "href": "http://localhost:8083/tic-tac-toe",
+      "htv:methodName": "GET"
+    },
+    {
+      "href": "http://localhost:8083/apibot",
+      "htv:methodName": "GET"
+    }
+  ]
+}
+```
 
 #### Request:
 
