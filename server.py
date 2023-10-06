@@ -99,8 +99,9 @@ def home():
         rw.add_form(BASE_URL + "register",method_name="POST",contentType="application/json",op="readproperty")
         rw.add_form_property(BASE_URL + "register","ttt:Agent",False,True)
 
-    inpage_json = rw.build()
-    return render_template('index.html',json_schema=inpage_json) #TODO fix this formatting
+    #inpage_json = rw.build()
+    return rw.build()
+    #return render_template('index.html',json_schema=inpage_json) #TODO fix this formatting
 
 
 
