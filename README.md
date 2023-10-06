@@ -63,7 +63,9 @@ GET http://localhost:8083/
 #### Request:
 
 POST http://localhost:8083/register
+```
 Body: agent=http://agentURL.com
+```
 
 #### Response:
 
@@ -146,6 +148,7 @@ POST http://localhost:8083/Square31?id=e686d513-e2ce-409a-802a-d854b8204581
 
 #### Response:
 
+```
 {
   "@context": {
     "@vocab": "https://www.w3.org/2019/wot/hypermedia#",
@@ -180,6 +183,7 @@ POST http://localhost:8083/Square31?id=e686d513-e2ce-409a-802a-d854b8204581
     }
   ]
 }
+```
 
 #### Request:
 
