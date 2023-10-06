@@ -1,0 +1,413 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/katharinefitzpatrick/ontologies/2023/6/untitled-ontology-25#"
+     xml:base="http://www.semanticweb.org/katharinefitzpatrick/ontologies/2023/6/untitled-ontology-25"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:tic-tac-toe="http://localhost:8083/tic-tac-toe#">
+    <owl:Ontology rdf:about="http://localhost:8083/tic-tac-toe">
+        <rdfs:label>Tic-tac-toe ontology</rdfs:label>
+        <rdfs:seeAlso>https://dbpedia.org/page/Tic-tac-toe</rdfs:seeAlso>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#hasFirstMove -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#hasFirstMove">
+        <rdfs:subPropertyOf rdf:resource="http://localhost:8083/tic-tac-toe#hasMove"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#hasID -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#hasID">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#Game"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#hasMove -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#hasMove">
+        <owl:inverseOf rdf:resource="http://localhost:8083/tic-tac-toe#subEventOf"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#AgentRole"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#Game"/>
+        <rdfs:range rdf:resource="http://localhost:8083/tic-tac-toe#Move"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#hasResult -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#hasResult">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#Game"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#hasSquare -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#hasSquare">
+        <rdfs:range rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#inSquare -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#inSquare">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#Move"/>
+        <rdfs:range rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#moveTakenBy -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#moveTakenBy">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#Move"/>
+        <rdfs:range rdf:resource="http://localhost:8083/tic-tac-toe#AgentRole"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#nextMove -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#nextMove">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#Move"/>
+        <rdfs:range rdf:resource="http://localhost:8083/tic-tac-toe#Move"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#performedBy -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#performedBy">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#AgentRole"/>
+        <rdfs:range rdf:resource="http://localhost:8083/tic-tac-toe#Agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#providesAgentRole -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#providesAgentRole">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#Game"/>
+        <rdfs:range rdf:resource="http://localhost:8083/tic-tac-toe#AgentRole"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#subEventOf -->
+
+    <owl:ObjectProperty rdf:about="http://localhost:8083/tic-tac-toe#subEventOf">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://localhost:8083/tic-tac-toe#Move"/>
+        <rdfs:range rdf:resource="http://localhost:8083/tic-tac-toe#Game"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#TicTacToeResult -->
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8083/tic-tac-toe#TicTacToeResult">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://localhost:8083/tic-tac-toe#TicTacToeResult"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Agent -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Agent">
+        <owl:disjointWith rdf:resource="http://localhost:8083/tic-tac-toe#AgentRole"/>
+        <owl:disjointWith rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#AgentRole -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#AgentRole">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://localhost:8083/tic-tac-toe#performedBy"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://localhost:8083/tic-tac-toe#Agent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Board -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Board">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Descriptive placeholder for querying the state of all of the squares in the game</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Event -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Event"/>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Game -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Game">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://localhost:8083/tic-tac-toe#providesAgentRole"/>
+                        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                        <owl:onClass rdf:resource="http://localhost:8083/tic-tac-toe#OPlayerRole"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://localhost:8083/tic-tac-toe#providesAgentRole"/>
+                        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                        <owl:onClass rdf:resource="http://localhost:8083/tic-tac-toe#XPlayerRole"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Event"/>
+        <rdfs:comment xml:lang="en">A tic-tac-toe game, with 2 players performing O Player Role and X Player Role, whereby players take it in turn to perform a move in a square of the board until one player has a row of 3 marks either diagonally, vertically or horizontally, or there is no winner and no move free squares in which to move (a draw).</rdfs:comment>
+        <rdfs:seeAlso xml:lang="en">http://dbpedia.org/resource/Tic-tac-toe</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Move -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Move">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://localhost:8083/tic-tac-toe#inSquare"/>
+                        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                        <owl:onClass rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://localhost:8083/tic-tac-toe#moveTakenBy"/>
+                        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                        <owl:onClass rdf:resource="http://localhost:8083/tic-tac-toe#AgentRole"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://localhost:8083/tic-tac-toe#subEventOf"/>
+                        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                        <owl:onClass rdf:resource="http://localhost:8083/tic-tac-toe#Game"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Game"/>
+        <rdfs:seeAlso xml:lang="en">The event in a game of a player (either in the X Player Role or O Player Role) placing their mark (X or O) in a square</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#OPlayerRole -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#OPlayerRole">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#AgentRole"/>
+        <owl:disjointWith rdf:resource="http://localhost:8083/tic-tac-toe#XPlayerRole"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square"/>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square11 -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square11">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+        <rdfs:comment xml:lang="en">Represents the top left hand square in a tic-tac-toe board</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square12 -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square12">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+        <rdfs:comment xml:lang="en">Represents the top middle square in a tic-tac-toe board</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square13 -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square13">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+        <rdfs:comment xml:lang="en">Represents the top right hand square in a tic-tac-toe board</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square21 -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square21">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+        <rdfs:comment xml:lang="en">Represents the middle left hand square in a tic-tac-toe board</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square22 -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square22">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+        <rdfs:comment xml:lang="en">Represents the middle square in a tic-tac-toe board</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square23 -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square23">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+        <rdfs:comment xml:lang="en">Represents the middle right hand square in a tic-tac-toe board</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square31 -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square31">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+        <rdfs:comment xml:lang="en">Represents the bottom left hand square in a tic-tac-toe board</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square32 -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square32">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+        <rdfs:comment xml:lang="en">Represents the bottom middle square in a tic-tac-toe board</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#Square33 -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#Square33">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#Square"/>
+        <rdfs:comment xml:lang="en">Represents the bottom right hand square in a tic-tac-toe board</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8083/tic-tac-toe#XPlayerRole -->
+
+    <owl:Class rdf:about="http://localhost:8083/tic-tac-toe#XPlayerRole">
+        <rdfs:subClassOf rdf:resource="http://localhost:8083/tic-tac-toe#AgentRole"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://localhost:8083/tic-tac-toe#Square11"/>
+            <rdf:Description rdf:about="http://localhost:8083/tic-tac-toe#Square12"/>
+            <rdf:Description rdf:about="http://localhost:8083/tic-tac-toe#Square13"/>
+            <rdf:Description rdf:about="http://localhost:8083/tic-tac-toe#Square21"/>
+            <rdf:Description rdf:about="http://localhost:8083/tic-tac-toe#Square22"/>
+            <rdf:Description rdf:about="http://localhost:8083/tic-tac-toe#Square23"/>
+            <rdf:Description rdf:about="http://localhost:8083/tic-tac-toe#Square31"/>
+            <rdf:Description rdf:about="http://localhost:8083/tic-tac-toe#Square32"/>
+            <rdf:Description rdf:about="http://localhost:8083/tic-tac-toe#Square33"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
