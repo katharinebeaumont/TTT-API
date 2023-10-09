@@ -2,6 +2,8 @@
 
 ## Game play
 
+The index page. This returns the context, and links including the form to register.
+
 #### Request:
 
 GET http://localhost:8083/
@@ -59,6 +61,10 @@ GET http://localhost:8083/
   ]
 }
 ```
+
+Next, registering. An agent POSTS to the /register endpoint, with the parameter in the body which is the agent's URI.
+The response includes the possible moves on the tic tac toe board (presented as POST links) and a link to the board, along with links back to
+the index.
 
 #### Request:
 
@@ -142,6 +148,8 @@ Body: agent=http://agentURL.com
 }
 ```
 
+Posting to a square: this gives the options to navigate back to the index, or to the board.
+
 #### Request:
 
 POST http://localhost:8083/Square31?id=e686d513-e2ce-409a-802a-d854b8204581
@@ -184,6 +192,8 @@ POST http://localhost:8083/Square31?id=e686d513-e2ce-409a-802a-d854b8204581
   ]
 }
 ```
+
+Going back to the board: this reveals the possible moves left to make, and reveals any moves the APIBOT has taken.
 
 #### Request:
 
@@ -264,6 +274,8 @@ GET http://localhost:8083/board?id=1c1b1628-d9d1-42c9-889d-265f528c738e
   ]
 }
 ```
+
+On the game finishing, the agent can see links to the board, the index, and now to the result page.
 
 ### ...Winning Requests
 
