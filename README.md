@@ -2,6 +2,9 @@
 
 This API allows users to play a game of Tic-Tac-Toe against a bot, using RESTful API calls to various endpoints, which return HATEOAS responses.
 
+Important note: 
+The form properties fields are entirely made up at the moment and need changing to something that fits an existing ontology (e.g. look to change this to be compatible with WOT descriptions)
+
 The game play is as follows;
 
 - The user registers at the endpoint /register, by POST request which includes the property "ttt:Agent" and the Agent URL
