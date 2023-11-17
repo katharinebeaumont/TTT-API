@@ -1,0 +1,5 @@
+.DS_Store
+TODO
+__pycache__/
+static/
+tests/__pycache__/graphhelpermethodtestscopy.cpython-38.pyc

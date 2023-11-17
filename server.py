@@ -17,6 +17,7 @@ import io
 import pydotplus
 from IPython.display import display, Image
 from rdflib.tools.rdf2dot import rdf2dot
+from flask import Response
 
 from responsewriter import ResponseWriter
 from apibot import APIBOT
@@ -69,6 +70,7 @@ html = od.make_html()
 def info():
     return html
 
+
 # This needs to point back to index
 @app.route("/apibot", methods=["GET"])
 def apibot():
@@ -84,10 +86,12 @@ def apibot():
 @app.route('/')
 def home():
     # TODO: check if registered
-    rw = ResponseWriter("tic-tac-toe","http://localhost:8083")
+    rw = ResponseWriter(BASE_URL,"ttt:Game")
 
-    rw.add_link(BASE_URL + "tic-tac-toe",method_name="GET")
-    rw.add_link(BASE_URL + "apibot",method_name="GET")
+    #TODO add back in, maybe... need a way for agent not to blow up when it tries these
+
+    #rw.add_link(BASE_URL + "tic-tac-toe",method_name="GET")
+    #rw.add_link(BASE_URL + "apibot",method_name="GET")
        
     id = request.args.get('id')
     if id:
@@ -99,12 +103,17 @@ def home():
         rw.add_form(BASE_URL + "register",method_name="POST",contentType="application/json",op="readproperty")
         rw.add_form_property(BASE_URL + "register","ttt:Agent",False,True)
 
-    #inpage_json = rw.build()
-    return rw.build()
+
+    rw.add_field("ttt:Agent", API_BOT)
+    return format_response(rw)
     #return render_template('index.html',json_schema=inpage_json) #TODO fix this formatting
 
 
-
+def format_response(rw):
+    response_json = rw.build()
+    json_str = json.dumps(response_json);
+    return Response(json_str, mimetype='application/ld+json')
+    
 #GAME FLOW
 # Need to annotate with:
 # Require agent URL to be posted
@@ -126,21 +135,20 @@ def home():
 def register():  
     # Assign and ID and return it
     id = uuid.uuid4()
-    agent_url = request.form['agent']
+    body = request.get_json()
+    
+    agent_url = body['ttt:Agent']
     agent_opponent = URIRef(agent_url)
     g = Graph()
     g.parse('TicTacToe.owl')
-    uri = BASE_URL + 'game/id=' + str(id)
-    print(uri)
-    game = URIRef(uri)
-    helper = GraphHelperMethods(g,'tic-tac-toe',game, API_BOT, agent_opponent,id)
+    helper = GraphHelperMethods(g,'tic-tac-toe',BASE_URL, API_BOT, agent_opponent,id)
     apibot = APIBOT(API_BOT, helper)
     GAMES[id] = helper,apibot;
 
     rw = ResponseWriter(BASE_URL + "register","")
     rw.add_link(BASE_URL + "",method_name="GET")
     add_links_for_active_game(helper, rw, id)
-    return rw.build()
+    return format_response(rw)
 
 
 # /board endpoint returns information about the squares in a game
@@ -148,52 +156,52 @@ def register():
 # Boards points to index     /
 #                 result     /result
 # and form to play a square  /square
-@app.route("/board", methods=["GET"])
+@app.route("/Board", methods=["GET"])
 def board():
-    rw = ResponseWriter(BASE_URL + "board","ttt:Board")
+    rw = ResponseWriter(request.url,"ttt:Board")
     rw.add_link(BASE_URL + "",method_name="GET")
     id = request.args.get('id')
     id = uuid.UUID(id)
     if id in GAMES:
         helper,apibot = GAMES[id] 
-        add_links_for_active_game(helper, rw, id)
-        board = helper.get_board()
+        add_links_for_active_game(helper, rw, id) #This adds links to free squares
+        board = helper.get_board_occupied()
         for b in board:
-            rw.add_field(b,board[b])
+            rw.add_nested_field("ttt:hasSquare",b,board[b]) #Just passing key in 
+
         
     else:
         rw.add_error("Not registered")
 
-    return rw.build()
+    return format_response(rw)
     
 
 def add_links_for_active_game(helper, rw, id):
     id_str = str(id)
     if (helper.is_game_over()):
         rw.add_link(BASE_URL + "result?id=" + id_str,method_name="GET") 
-        rw.add_link(BASE_URL + "register",method_name="GET") 
+        rw.add_form(BASE_URL + "register",method_name="POST",contentType="application/json",op="readproperty")
+        rw.add_form_property(BASE_URL + "register","ttt:Agent",False,True)
     else:
-        rw.add_link(BASE_URL + "board?id=" + id_str,method_name="GET") 
+        board = helper.board
+        rw.add_link(board,method_name="GET") 
         free_squares = helper.get_free_squares()
         for sq in free_squares:
-            sq_str = str(sq)
-            square_id = sq_str.split(helper.ttt,1)[1]
-            rw.add_link(BASE_URL + square_id + "?id=" + id_str,method_name="POST") 
-       
+            rw.add_form(str(sq),method_name="PUT",contentType="application/json",op="readproperty") 
+            
 
 
 # Result points back to index
 @app.route('/result')
 def result():
     #Start building response
-    rw = ResponseWriter(BASE_URL + "result","ttt:TicTacToeResult")
+    rw = ResponseWriter(request.url,"ttt:TicTacToeResult")
     id = request.args.get('id')
     id = uuid.UUID(id)
     #Is the player registered 
     if id in GAMES:
         helper,apibot = GAMES[id] 
-        id_str = str(id)
-        rw.add_link(BASE_URL + "board?id=" + id_str,method_name="GET") 
+        rw.add_link(helper.board,method_name="GET") 
         winner = helper.get_winner()
 
         if winner:
@@ -206,32 +214,26 @@ def result():
 
 
     rw.add_link(BASE_URL + "",method_name="GET")
-    return rw.build()
+    return format_response(rw)
 
 
-
-# Not registered? 404 and LINK TO /REGISTER ENDPOINT
-# Registered? RETURNS LINKS TO BOARD AND ONTOLOGY
-# If no game token in post, given new id / token - this should be to ontology 
-
-# TODO CHECK Required headers: Content-Type: application/x-www-form-urlencoded
-@app.route('/Square<sq>', methods=["POST"])
+@app.route('/Square<sq>', methods=["PUT"])
 def square(sq):
-    rw = ResponseWriter(BASE_URL + "Square"+sq,"ttt:Square"+sq)
+
+    rw = ResponseWriter(request.url,"ttt:Square"+sq) #TODO this should be the full url
     rw.add_link(BASE_URL + "",method_name="GET") #Always link to index page
     id = request.args.get('id')
     id = uuid.UUID(id)
-    print(GAMES)
     if id in GAMES:
         id_str = str(id)
         helper,apibot = GAMES[id] 
-        rw.add_link(BASE_URL + "board?id=" + id_str,method_name="GET") 
-
+        rw.add_field("ttt:moveTakenBy", helper.oagent)
+        
+        rw.add_link(helper.board,method_name="GET") 
         # Check for invalid posts
-        square_uri = helper.get_square_url_for_int(sq)
-        if helper.is_square_free(square_uri):
-            helper.add_opponent_move(square_uri) #TODO What is the move is invalid?
-            helper.print_game() #TODO What should this do instead
+        if helper.is_square_free(request.url):
+            helper.add_opponent_move(request.url) #TODO What is the move is invalid?
+            #helper.print_game() #TODO What should this do instead
         
             #Is there a winner
             game_over = helper.is_game_over()
@@ -257,7 +259,7 @@ def square(sq):
     else: 
         rw.add_error("Not registered")
     
-    return rw.build()
+    return format_response(rw)
 
  
 if __name__ == '__main__':

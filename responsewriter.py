@@ -65,7 +65,6 @@ class ResponseWriter():
         #NB don't think you can mix and match with JSON schema.
         if form:
             properties = []
-            print(form)
             for key in form:
                 if (key == "properties"):
                     properties = form["properties"]
@@ -81,6 +80,25 @@ class ResponseWriter():
         
     def add_field(self, label, value):
         self.additional_fields[label] = value
+
+    
+    def add_nested_field(self, label, key, value):
+         #1. Get field if it exists already
+        new_field =  {
+            key: value
+        }
+
+        field = None
+        for key in self.additional_fields:
+            if key == label:
+                field = self.additional_fields[label]
+
+        
+        if (field):
+            field = field + [new_field]
+            self.additional_fields[label] = field
+        else:            
+            self.additional_fields[label] = [ new_field ]
 
 
     def add_error(self, error_text):

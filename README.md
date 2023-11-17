@@ -215,6 +215,9 @@ GET http://localhost:8083/board?id=1c1b1628-d9d1-42c9-889d-265f528c738e
   },
   "@id": "http://localhost:8083/board",
   "@type": "ttt:Board",
+  ttt:hasSquare: {
+    
+  }
   "http://localhost:8083/tic-tac-toe#Square11": "http://localhost:8083/apibot",
   "http://localhost:8083/tic-tac-toe#Square12": "",
   "http://localhost:8083/tic-tac-toe#Square13": "",
