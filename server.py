@@ -1,11 +1,9 @@
-import pandas as pd
-import numpy as np
+import sys
 import json
 from flask import Flask,request,Response,render_template,current_app
 from os import environ
-from rdflib import Graph, URIRef, Namespace, RDF
+from rdflib import Graph, URIRef
 from graphhelpermethods import GraphHelperMethods
-from werkzeug.routing import BaseConverter
 from pylode import OntDoc
 import uuid
 import io
@@ -19,7 +17,6 @@ from apibot import APIBOT
 
 
 ### Constants ###
-
 
 GAME_ONTOLOGY="TicTacToe.owl"
 GAME_ONTOLOGY_TAG="tic-tac-toe"
@@ -39,9 +36,9 @@ app = Flask(__name__)
 
 # /
 # If not registered
-#   Links to:       /tic-tac-toe
-#                   /apibot
 #   Form to:        /register
+#   APIBOT RDF in the form of 
+#   "ttt:Agent" : APIBOT URI
 # If registered
 #   Links and forms to active game (see function add_links_for_active_game) 
 @app.route('/')
@@ -56,7 +53,7 @@ def home():
             add_links_for_active_game(helper, rw, id)
     else:
         rw.add_form(BASE_URL + "register",method_name="POST",contentType="application/json",op="readproperty")
-        rw.add_form_property(BASE_URL + "register","ttt:Agent",False,True)
+        rw.add_form_property(BASE_URL + "register","@id",False,True)
 
 
     rw.add_field("ttt:Agent", API_BOT_URI)
@@ -77,10 +74,9 @@ html = od.make_html()
 def info():
     return html
 
-
 # /apibot
 # APIBOT INFORMATION
-# Links to: /
+# Route returns html, unlike other routes, which return JSON
 @app.route("/" + BOT_NAME, methods=["GET"])
 def apibot():
     json_response = ResponseWriter(BASE_URL + BOT_NAME,"ttt:Agent")
@@ -101,8 +97,15 @@ def apibot():
 #   context is the surrounding Object, such as Properties, Actions, 
 #   and Events or the Thing itself for meta-interactions."
 #   Example data:
-#   Body: ttt:Agent=http://agentURL/agent
-# 
+#   Body: 
+#   {
+#       "@id": "http://agentURL.com",
+#       "@type":"ttt:Agent",
+#       "@context": {
+#           "ttt": "http://localhost:8083/tic-tac-toe#"
+#       }
+#   }
+#
 #   Links to:     /
 #   Links and forms to active game (see function add_links_for_active_game) 
 @app.route("/register", methods=["POST"])
@@ -112,7 +115,7 @@ def register():
 
     # Get the opponent name from the request body
     body = request.get_json()
-    agent_url = body['ttt:Agent']
+    agent_url = body['@id']
     agent_opponent_uri = URIRef(agent_url)
 
     # Create a new RDF graph for the game using the tic-tac-toe ontology
@@ -120,9 +123,18 @@ def register():
     g.parse(GAME_ONTOLOGY)
     helper = GraphHelperMethods(g, GAME_ONTOLOGY_TAG, BASE_URL, API_BOT_URI, agent_opponent_uri, id)
     apibot = APIBOT(API_BOT_URI, helper)
+   
     # Store the game helper (access to RDF graph) and the opponent instance against the game ID
     GAMES[id] = helper,apibot;
-
+    # Routine memory check (this object gets large...)
+    #if (GAMES):
+     #   objectSize = sys.getsizeof(GAMES);
+      #  if (objectSize > 10000):
+          #  print("Flushing GAMES")
+       ##     print("GAMES object is too big! ", objectSize)
+           # d GAMES[id] = helper,apibot;
+         ##   GAMES = {}
+    
     # Write the response
     rw = ResponseWriter(BASE_URL + "register","")
     rw.add_link(BASE_URL + "",method_name="GET")
@@ -207,6 +219,8 @@ def result():
 # If registered
 #   Links to      /Board
 #                 / 
+#   Information on move taken by e.g.
+#   "ttt:moveTakenBy": "http://agentURL.com",
 #   If game over
 #       Links to      /result
 #   If the move is invalid

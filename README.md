@@ -1,9 +1,11 @@
 # TIC TAC TOE API
 
-This API allows users to play a game of Tic-Tac-Toe against a bot, using RESTful API calls to various endpoints, which return HATEOAS responses.
+This API allows users to play a game of Tic-Tac-Toe against a bot, using RESTful API calls to various endpoints, which return JSON with hypermedia controls and the use of Hypermedia As The Engine Of Application State (HATEOAS). 
 
 Important note: 
 The form properties fields are entirely made up at the moment and need changing to something that fits an existing ontology (e.g. look to change this to be compatible with WOT descriptions)
+
+## Game Play
 
 The game play is as follows;
 
@@ -53,7 +55,7 @@ Content-Type application/json
       "wot:op": "readproperty",
       "properties": [
         {
-          "name": "ttt:Agent",
+          "name": "@id",
           "readOnly": false,
           "required": true
         }
@@ -67,8 +69,16 @@ Content-Type application/json
 
 POST http://localhost:8083/register
 Content-Type application/json
+
+Body: 
 ```
-Body: {"ttt:Agent":"http://agentURL.com"}
+{ 
+ "@id": "http://agentURL.com",
+  "@type":"ttt:Agent"
+  "@context": {
+    "ttt": "http://localhost:8083/tic-tac-toe#"
+  }
+}
 ```
 
 #### Register form response::
@@ -497,3 +507,12 @@ Content-Type application/json
   ]
 }
 ```
+
+
+## Requirements
+
+
+## Running the server
+
+
+## Running testss
