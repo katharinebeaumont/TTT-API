@@ -5,13 +5,42 @@ This API allows users to play a game of Tic-Tac-Toe against a bot, using RESTful
 Important note: 
 The form properties fields are entirely made up at the moment and need changing to something that fits an existing ontology (e.g. look to change this to be compatible with WOT descriptions)
 
+## Requirements
+
+This has been developed using the [anaconda3](https://anaconda.org/) environment / suite of libraries and dependencies and [pip](https://pypi.org/project/pip/) for dependencies.
+
+[RDFLib](https://rdflib.readthedocs.io/en/stable/index.html) is used for the ontology and graph. [Flask](https://flask.palletsprojects.com/en/3.0.x/) is used for the server.
+
+Requirements are in requirements.txt
+Run ```pip install -r requirements.txt```
+
+## Running the server
+
+The by default the server runs at http://127.0.0.1:5000/
+
+```flask run```
+
+To specify host and port, e.g.:
+
+```flask run --host=localhost --port=8083```
+
+## Running tests
+
+```python -m unittest tests/*.py```
+
+or for more specific tests
+
+```python -m unittest tests/responsewritertests.py```
+
+
 ## Game Play
 
 The game play is as follows;
 
 - The user registers at the endpoint /register, by POST request which includes the property "ttt:Agent" and the Agent URL
 - This returns links and forms to play the game, with an assigned ID
-- When the game is over, a link to the result, and form to register again are provided
+- The server creates an RDF graph in memory using the assigned ID, and intantiates classes of ttt:Board and ttt:SquareXX (XX being the square location from the set {11,12,13,21,22,23,31,32,33}. Diagonals are {11,22,33} and {13,22,31}). The graph is stored against the ID in a dictionary data structure. Moves are added to this graph.
+- When the game is over, a link to the result, and form to register again are provided. The graph of the game is stored in the /results folder, with the game ID as the file title and in ttl format.
 
 For example:
 
@@ -507,12 +536,3 @@ Content-Type application/json
   ]
 }
 ```
-
-
-## Requirements
-
-
-## Running the server
-
-
-## Running testss
