@@ -196,6 +196,11 @@ def result():
         helper,apibot = GAMES[id] 
         rw.add_link(helper.board,method_name="GET") 
         winner = helper.get_winner()
+        # Save game
+        try:
+            helper.save_graph()
+        except:
+            print("An exception occurred saving the graph")
 
         if winner:
             rw.add_field("ttt:TicTacToeResult",winner)
@@ -207,6 +212,8 @@ def result():
 
 
     rw.add_link(BASE_URL + "",method_name="GET")
+   
+
     return format_response(rw)
 
 

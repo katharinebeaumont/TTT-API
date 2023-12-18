@@ -8,6 +8,7 @@ class GraphHelperMethods():
         self.xagent = xagentplayer
         self.oagent = oagentplayer
         id = str(id)
+        self.id = id
         ns_wtm = ''
         for ns_prefix, namespace in self.graph.namespaces():
             if prefix == ns_prefix:
@@ -54,6 +55,10 @@ class GraphHelperMethods():
             self.graph.add((board_instace, self.ttt.hasSquare, square_instance))
 
     
+    def save_graph(self):
+        self.graph.serialize(destination="results/" + self.id + ".ttl")
+
+
     def get_first_move(self):
         # Get first move, then go to next move
         if (self.game, self.ttt.firstMove, None) in self.graph:
