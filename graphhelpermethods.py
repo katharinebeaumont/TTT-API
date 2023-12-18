@@ -22,23 +22,23 @@ class GraphHelperMethods():
         self.graph.add((xagentplayer, RDF.type, self.ttt.XPlayerRole))
         self.graph.add((oagentplayer, RDF.type, self.ttt.OPlayerRole))
 
-        game_instace = URIRef(url + "Game?id="+id)
-        self.game = game_instace
-        self.graph.add((game_instace, RDF.type, OWL.NamedIndividual))
-        self.graph.add((game_instace, RDF.type, self.ttt.Game))
-        self.graph.add((game_instace, self.ttt.hasID, Literal(id)))
+        game_instance = URIRef(url + "Game?id="+id)
+        self.game = game_instance
+        self.graph.add((game_instance, RDF.type, OWL.NamedIndividual))
+        self.graph.add((game_instance, RDF.type, self.ttt.Game))
+        self.graph.add((game_instance, self.ttt.hasID, Literal(id)))
         
-        self.graph.add((game_instace, self.ttt.providesAgentRole, xagentplayer))
-        self.graph.add((game_instace, self.ttt.providesAgentRole, oagentplayer))
+        self.graph.add((game_instance, self.ttt.providesAgentRole, xagentplayer))
+        self.graph.add((game_instance, self.ttt.providesAgentRole, oagentplayer))
         
-        #TODO: am here, adding board instace, and square instances, and pointing to these
+        #TODO: am here, adding board instance, and square instances, and pointing to these
         # instead of converting from thing to thing... then to get the board, shoudl just query
         # board hasSquare
-        #Board instace
-        board_instace = URIRef(url + "Board?id="+id)
-        self.board = board_instace
-        self.graph.add((board_instace, RDF.type, OWL.NamedIndividual))
-        self.graph.add((board_instace, RDF.type, self.ttt.Board))
+        #Board instance
+        board_instance = URIRef(url + "Board?id="+id)
+        self.board = board_instance
+        self.graph.add((board_instance, RDF.type, OWL.NamedIndividual))
+        self.graph.add((board_instance, RDF.type, self.ttt.Board))
 
         for (s, p, o) in self.graph.triples((None, RDFS.subClassOf, self.ttt.Square)):
             square_itself = s
@@ -52,7 +52,7 @@ class GraphHelperMethods():
             self.graph.add((square_instance, RDF.type, OWL.NamedIndividual ))
             self.graph.add((square_instance, RDF.type, square_itself))
             #add them to the board
-            self.graph.add((board_instace, self.ttt.hasSquare, square_instance))
+            self.graph.add((board_instance, self.ttt.hasSquare, square_instance))
 
     
     def save_graph(self):
