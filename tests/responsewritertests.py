@@ -26,7 +26,8 @@ class TestResponseWriter(unittest.TestCase):
 
     # Test - basic
     def test_basic(self):
-        rw = ResponseWriter("http://localhost:8083")
+        print("TEST BASIC")
+        rw = ResponseWriter("http://localhost:8083","ttt:Game")
         rw.add_link("http://localhost:8083/dump","rdfs:seeAlso")
         b = rw.build()
         print(json.dumps(b, indent=4))
@@ -34,7 +35,8 @@ class TestResponseWriter(unittest.TestCase):
 
     # Test - index page, not registered (link to register form)
     def test_index_page(self):
-        rw = ResponseWriter("http://localhost:8083")
+        print("TEST INDEX PAGE NOT REGISTERED")
+        rw = ResponseWriter("http://localhost:8083","ttt:Game")
         rw.add_link("http://localhost:8083/tic-tac-toe",method_name="GET")
         rw.add_link("http://localhost:8083/apibot",method_name="GET")
         rw.add_link("http://localhost:8083/register",method_name="GET")
@@ -45,7 +47,8 @@ class TestResponseWriter(unittest.TestCase):
 
     # Test - index page, registered
     def test_index_page_registered(self):
-        rw = ResponseWriter("http://localhost:8083/")
+        print("TEST INDEX PAGE REGISTERED")
+        rw = ResponseWriter("http://localhost:8083/","ttt:Game")
         rw.add_field("ttt:Game",{"ttt:hasID":self.helper.id})
         rw.add_link("http://localhost:8083/tic-tac-toe",method_name="GET")
         rw.add_link("http://localhost:8083/apibot",method_name="GET")
@@ -59,6 +62,7 @@ class TestResponseWriter(unittest.TestCase):
 
     # Test - apibot page (includes information in JSON)
     def test_apibot_page(self):
+        print("TEST API BOT")
         rw = ResponseWriter("http://localhost:8083/apibot","ttt:Agent")
         rw.add_field("description","basic opponent (no strategy)")
         rw.add_link("http://localhost:8083/index",method_name="GET")
@@ -68,6 +72,7 @@ class TestResponseWriter(unittest.TestCase):
 
     # Test - result response TODO think about this in ontology
     def test_result_page(self):
+        print("TEST RESULT PAGE")
         rw = ResponseWriter("http://localhost:8083/result","ttt:TicTacToeResult")
         rw.add_field("ttt:TicTacToeResult","ttt:XPlayerRole")
         rw.add_link("http://localhost:8083/index",method_name="GET")
@@ -77,6 +82,7 @@ class TestResponseWriter(unittest.TestCase):
     
     # Test - result page, not registered
     def test_result_page_not_registered(self):
+        print("TEST PAGE NOT REGISTRED")
         rw = ResponseWriter("http://localhost:8083/result","ttt:TicTacToeResult")
         rw.add_error("Not registered")
         rw.add_link("http://localhost:8083/index",method_name="GET")
@@ -86,11 +92,12 @@ class TestResponseWriter(unittest.TestCase):
 
     # Test - board response
     def test_board_page(self):
+        print("TEST BOARD PAGE")
         rw = ResponseWriter("http://localhost:8083/board","ttt:Board")
         
         #TODO: add keyword in ontology for board to group this better
         # apprieviate full url of squares to ttt:
-        board = self.helper.get_board()
+        board = self.helper.get_board_occupied()
         for b in board:
             
             rw.add_field(b,board[b])
@@ -102,7 +109,8 @@ class TestResponseWriter(unittest.TestCase):
 
 
     def test_form(self):
-        rw = ResponseWriter("http://localhost:8083/register")
+        print("TEST FORM")
+        rw = ResponseWriter("http://localhost:8083/register","ttt:Game")
         rw.add_form("http://localhost:8083/register",method_name="POST",contentType="application/json",op="readproperty")
         rw.add_form_property("http://localhost:8083/register","ttt:Agent",False,True)
         b = rw.build()

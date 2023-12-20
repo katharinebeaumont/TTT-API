@@ -59,8 +59,8 @@ Content-Type application/json
     "@vocab": "https://www.w3.org/2019/wot/hypermedia#",
     "ttt": "http://localhost:8083/tic-tac-toe#",
     "htv": "http://www.w3.org/2011/http#",
-    "wot": "https://w3c.github.io/wot-thing-description/#",
-    "sch": "https://schema.org/#",
+   "wot": "https://w3c.github.io/wot-thing-description/#",
+    "sch":"https://schema.org/",
     "links": {
       "@id": "Link"
     },
@@ -120,8 +120,8 @@ Body:
     "@vocab": "https://www.w3.org/2019/wot/hypermedia#",
     "ttt": "http://localhost:8083/tic-tac-toe#",
     "htv": "http://www.w3.org/2011/http#",
-    "wot": "https://w3c.github.io/wot-thing-description/#",
-    "sch": "https://schema.org/#",
+   "wot": "https://w3c.github.io/wot-thing-description/#",
+    "sch":"https://schema.org/",
     "links": {
       "@id": "Link"
     },
@@ -222,7 +222,7 @@ Content-Type application/json
     "ttt": "http://localhost:8083/tic-tac-toe#",
     "htv": "http://www.w3.org/2011/http#",
     "wot": "https://w3c.github.io/wot-thing-description/#",
-    "sch": "https://schema.org/#",
+    "sch":"https://schema.org/",
     "links": {
       "@id": "Link"
     },
@@ -267,7 +267,7 @@ Content-Type application/json
     "ttt": "http://localhost:8083/tic-tac-toe#",
     "htv": "http://www.w3.org/2011/http#",
     "wot": "https://w3c.github.io/wot-thing-description/#",
-    "sch": "https://schema.org/#",
+    "sch":"https://schema.org/",
     "links": {
       "@id": "Link"
     },
@@ -369,7 +369,7 @@ PUT http://localhost:8083/Square32?id=1df666f8-6e74-4e51-8ad3-7f807bd380cc
     "ttt": "http://localhost:8083/tic-tac-toe#",
     "htv": "http://www.w3.org/2011/http#",
     "wot": "https://w3c.github.io/wot-thing-description/#",
-    "sch": "https://schema.org/#",
+    "sch":"https://schema.org/",
     "links": {
       "@id": "Link"
     },
@@ -417,7 +417,7 @@ GET http://localhost:8083/result?id=1df666f8-6e74-4e51-8ad3-7f807bd380cc
     "ttt": "http://localhost:8083/tic-tac-toe#",
     "htv": "http://www.w3.org/2011/http#",
     "wot": "https://w3c.github.io/wot-thing-description/#",
-    "sch": "https://schema.org/#",
+    "sch":"https://schema.org/",
     "links": {
       "@id": "Link"
     },
@@ -462,7 +462,7 @@ Content-Type application/json
     "ttt": "http://localhost:8083/tic-tac-toe#",
     "htv": "http://www.w3.org/2011/http#",
     "wot": "https://w3c.github.io/wot-thing-description/#",
-    "sch": "https://schema.org/#",
+    "sch":"https://schema.org/",
     "links": {
       "@id": "Link"
     },

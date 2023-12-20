@@ -14,7 +14,7 @@ class TestGraphMethods(unittest.TestCase):
         # Setup 
         g = Graph()
         g.parse('TicTacToe.owl')
-        self.helper = GraphHelperMethods(g,'tic-tac-toe',"http://localhost:8083",self.apiBot, self.agentZero, Literal("someId"))
+        self.helper = GraphHelperMethods(g,'tic-tac-toe',"http://localhost:8083/",self.apiBot, self.agentZero, Literal("someId"))
 
 
     # Tests
@@ -60,32 +60,24 @@ class TestGraphMethods(unittest.TestCase):
             self.assertEqual(sq11, o)
 
 
-    def test_get_board_all_empty(self):
-        squares = self.helper.get_board()
-        #There are 9 squares in the board
-        self.assertEqual(9, len(squares))
-        #None of them have a move in them
-        for v in squares.values():
-            self.assertEqual(0, len(v))
+    def test_get_board_occupied_all_empty(self):
+        squares = self.helper.get_board_occupied()
+        #There are 9 squares in the board, none of them have a move in them
+        self.assertEqual(0, len(squares))
+        
 
 
     def test_get_board_some_occupied(self):
         self.helper.add_move(URIRef("http://localhost:8083/Square13?id=someId"), self.apiBot)
         self.helper.add_move(URIRef("http://localhost:8083/Square11?id=someId"), self.agentZero)
-        squares = self.helper.get_board()
+        squares = self.helper.get_board_occupied()
         print("test_get_board_some_occupied squares:")
         for s in squares:
             print(s, squares[s])
             
         count = 0
-        #There are 9 squares in the board
-        self.assertEqual(9, len(squares))
-        for v in squares.values():
-            if (len(v) > 0):
-                count = count + 1
-
-        #Two of them have a move in them
-        self.assertEqual(2, count)
+        #There are 9 squares in the board but only two are occupied
+        self.assertEqual(2, len(squares))
 
 
     def test_square_to_square_instance(self):

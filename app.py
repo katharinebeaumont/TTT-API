@@ -1,7 +1,6 @@
 import sys
 import json
 from flask import Flask,request,Response,render_template,current_app
-from os import environ
 from rdflib import Graph, URIRef
 from graphhelpermethods import GraphHelperMethods
 from pylode import OntDoc
@@ -11,20 +10,12 @@ import pydotplus
 from IPython.display import display, Image
 from rdflib.tools.rdf2dot import rdf2dot
 from flask import Response
+from constants import HOST, PORT, BASE_URL, BOT_NAME, API_BOT_URI, GAME_ONTOLOGY, GAME_ONTOLOGY_TAG, GAME_ONTOLOGY_PREFIX
+
 
 from responsewriter import ResponseWriter
 from apibot import APIBOT
 
-
-### Constants ###
-
-GAME_ONTOLOGY="TicTacToe.owl"
-GAME_ONTOLOGY_TAG="tic-tac-toe"
-HOST=environ.get('HOST', 'localhost')
-PORT=environ.get('PORT', 8083)
-BASE_URL='http://'+HOST+':'+str(PORT)+'/'
-BOT_NAME = "apibot"
-API_BOT_URI = URIRef(BASE_URL + BOT_NAME)
 GAMES = {}
 
 # Main Code
@@ -38,12 +29,12 @@ app = Flask(__name__)
 # If not registered
 #   Form to:        /register
 #   APIBOT RDF in the form of 
-#   "ttt:Agent" : APIBOT URI
+#   GAME_ONTOLOGY_PREFIX + ":Agent" : APIBOT URI
 # If registered
 #   Links and forms to active game (see function add_links_for_active_game) 
 @app.route('/')
 def home():
-    rw = ResponseWriter(BASE_URL,"ttt:Game")
+    rw = ResponseWriter(BASE_URL,GAME_ONTOLOGY_PREFIX + ":Game")
 
     id = request.args.get('id')
     if id:
@@ -56,7 +47,7 @@ def home():
         rw.add_form_property(BASE_URL + "register","@id",False,True)
 
 
-    rw.add_field("ttt:Agent", API_BOT_URI)
+    rw.add_field(GAME_ONTOLOGY_PREFIX + ":Agent", API_BOT_URI)
     return format_response(rw)
 
 
@@ -79,7 +70,7 @@ def info():
 # Route returns html, unlike other routes, which return JSON
 @app.route("/" + BOT_NAME, methods=["GET"])
 def apibot():
-    json_response = ResponseWriter(BASE_URL + BOT_NAME,"ttt:Agent")
+    json_response = ResponseWriter(BASE_URL + BOT_NAME,GAME_ONTOLOGY_PREFIX + ":Agent")
     json_response.add_field("description","basic opponent (no strategy)")
     json_response.add_link(BASE_URL,method_name="GET")
     inpage_json = json_response.build()
@@ -100,7 +91,7 @@ def apibot():
 #   Body: 
 #   {
 #       "@id": "http://agentURL.com",
-#       "@type":"ttt:Agent",
+#       "@type":GAME_ONTOLOGY_PREFIX + ":Agent",
 #       "@context": {
 #           "ttt": "http://localhost:8083/tic-tac-toe#"
 #       }
@@ -159,7 +150,7 @@ def register():
 #   }
 @app.route("/Board", methods=["GET"])
 def board():
-    rw = ResponseWriter(request.url,"ttt:Board")
+    rw = ResponseWriter(request.url,GAME_ONTOLOGY_PREFIX + ":Board")
     rw.add_link(BASE_URL + "",method_name="GET")
     id = request.args.get('id')
     id = uuid.UUID(id)
@@ -168,7 +159,7 @@ def board():
         add_links_for_active_game(helper, rw, id) #This adds links to free squares
         board = helper.get_board_occupied()
         for b in board:
-            rw.add_nested_field("ttt:hasSquare",b,board[b]) #Just passing key in 
+            rw.add_nested_field(GAME_ONTOLOGY_PREFIX + ":hasSquare",b,board[b]) #Just passing key in 
 
     else:
         rw.add_error("Not registered")
@@ -182,13 +173,13 @@ def board():
 #   Links to      /Board
 #                 / 
 #   Result RDF in the form of (for example)
-#       "ttt:TicTacToeResult" : agent_url OR "None" (draw)
+#       GAME_ONTOLOGY_PREFIX + ":TicTacToeResult" : agent_url OR "None" (draw)
 # Else
 #   Error and link to index
 @app.route('/result')
 def result():
     #Start building response
-    rw = ResponseWriter(request.url,"ttt:TicTacToeResult")
+    rw = ResponseWriter(request.url,GAME_ONTOLOGY_PREFIX + ":TicTacToeResult")
     id = request.args.get('id')
     id = uuid.UUID(id)
     #Is the player registered 
@@ -196,16 +187,20 @@ def result():
         helper,apibot = GAMES[id] 
         rw.add_link(helper.board,method_name="GET") 
         winner = helper.get_winner()
+       
+        if winner:
+            rw.add_field(GAME_ONTOLOGY_PREFIX + ":TicTacToeResult",winner)
+        else:
+            rw.add_field(GAME_ONTOLOGY_PREFIX + ":TicTacToeResult","None") #TODO consider some placeholder, also something for draw
+
         # Save game
         try:
             helper.save_graph()
         except:
             print("An exception occurred saving the graph")
 
-        if winner:
-            rw.add_field("ttt:TicTacToeResult",winner)
-        else:
-            rw.add_field("ttt:TicTacToeResult","None") #TODO consider some placeholder, also something for draw
+        # Remove value from GAMES dictionary #keepItClean
+        del GAMES[id]
 
     else:
         rw.add_error("Not registered")
@@ -227,7 +222,7 @@ def result():
 #   Links to      /Board
 #                 / 
 #   Information on move taken by e.g.
-#   "ttt:moveTakenBy": "http://agentURL.com",
+#   GAME_ONTOLOGY_PREFIX + ":moveTakenBy": "http://agentURL.com",
 #   If game over
 #       Links to      /result
 #   If the move is invalid
@@ -237,14 +232,14 @@ def result():
 @app.route('/Square<sq>', methods=["PUT"])
 def square(sq):
 
-    rw = ResponseWriter(request.url,"ttt:Square"+sq) #TODO this should be the full url
+    rw = ResponseWriter(request.url,GAME_ONTOLOGY_PREFIX + ":Square"+sq) #TODO this should be the full url
     rw.add_link(BASE_URL + "",method_name="GET") #Always link to index page
     id = request.args.get('id')
     id = uuid.UUID(id)
     if id in GAMES:
         id_str = str(id)
         helper,apibot = GAMES[id] 
-        rw.add_field("ttt:moveTakenBy", helper.oagent)
+        rw.add_field(GAME_ONTOLOGY_PREFIX + ":moveTakenBy", helper.oagent)
         
         rw.add_link(helper.board,method_name="GET") 
         # Check for invalid posts
@@ -292,7 +287,7 @@ def add_links_for_active_game(helper, rw, id):
     if (helper.is_game_over()):
         rw.add_link(BASE_URL + "result?id=" + id_str,method_name="GET") 
         rw.add_form(BASE_URL + "register",method_name="POST",contentType="application/json",op="readproperty")
-        rw.add_form_property(BASE_URL + "register","ttt:Agent",False,True)
+        rw.add_form_property(BASE_URL + "register",GAME_ONTOLOGY_PREFIX + ":Agent",False,True)
     else:
         board = helper.board
         rw.add_link(board,method_name="GET") 
@@ -306,8 +301,10 @@ def format_response(rw):
     response_json = rw.build()
     json_str = json.dumps(response_json);
     return Response(json_str, mimetype='application/ld+json')
-    
-# Just don't use this for now...
+
+
+# Just don't use this for now... Huge memory drain, very slow, not particularly useful. Look at the 
+# ttl files in the results folder instead
 @app.route("/dump", methods=["GET"])
 def dump():  
     for key in GAMES:
@@ -320,7 +317,8 @@ def dump():
 
     return render_template('dump.html')
 
-# Really, don't
+
+# ...Really, don't!!!! 
 def visualize(g):
     stream = io.StringIO()
     rdf2dot(g, stream, opts = {display})

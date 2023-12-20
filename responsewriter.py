@@ -1,8 +1,9 @@
 import json
+from constants import GAME_ONTOLOGY_PREFIX, BASE_URL, GAME_ONTOLOGY_TAG
 
 class ResponseWriter():
 
-    def __init__(self, id, type_dsc="http://schema.org/Game"):
+    def __init__(self, id, type_dsc):
         self.type_dsc = type_dsc
         self.id = id
             
@@ -12,10 +13,10 @@ class ResponseWriter():
 
         self.context = {
             "@vocab": "https://www.w3.org/2019/wot/hypermedia#",
-            "ttt": "http://localhost:8083/tic-tac-toe#",
+            GAME_ONTOLOGY_PREFIX: BASE_URL + GAME_ONTOLOGY_TAG + "#",
             "htv":"http://www.w3.org/2011/http#",
             "wot":"https://w3c.github.io/wot-thing-description/#",
-            "sch":"https://schema.org/#",
+            "sch":"https://schema.org/",
             "links":{ "@id": "Link" },
             "forms":{ "@id": "Form" },
             "href":{ "@id": "hasTarget" },
