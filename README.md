@@ -9,7 +9,7 @@ The form properties fields are entirely made up at the moment and need changing 
 
 This has been developed using the [anaconda3](https://anaconda.org/) environment / suite of libraries and dependencies and [pip](https://pypi.org/project/pip/) for dependencies.
 
-[RDFLib](https://rdflib.readthedocs.io/en/stable/index.html) is used for the ontology and graph. [Flask](https://flask.palletsprojects.com/en/3.0.x/) is used for the server.
+[RDFLib](https://rdflib.readthedocs.io/en/stable/index.html) is used for the ontology and graph. [Flask](https://flask.palletsprojects.com/en/3.0.x/) is used for the server. [pyLODE](https://github.com/RDFLib/pyLODE) is used to load in the Tic-Tac-Toe ontology and host it as HTML.
 
 Requirements are in requirements.txt
 Run ```pip install -r requirements.txt```
