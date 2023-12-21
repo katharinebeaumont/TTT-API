@@ -1,4 +1,3 @@
-import sys
 import json
 from flask import Flask,request,Response,render_template,current_app
 from rdflib import Graph, URIRef
@@ -7,7 +6,7 @@ from pylode import OntDoc
 import uuid
 import io
 import pydotplus
-from IPython.display import display, Image
+from IPython.display import display
 from rdflib.tools.rdf2dot import rdf2dot
 from flask import Response
 from constants import HOST, PORT, BASE_URL, BOT_NAME, API_BOT_URI, GAME_ONTOLOGY, GAME_ONTOLOGY_TAG, GAME_ONTOLOGY_PREFIX
@@ -116,15 +115,7 @@ def register():
     apibot = APIBOT(API_BOT_URI, helper)
    
     # Store the game helper (access to RDF graph) and the opponent instance against the game ID
-    GAMES[id] = helper,apibot;
-    # Routine memory check (this object gets large...)
-    #if (GAMES):
-     #   objectSize = sys.getsizeof(GAMES);
-      #  if (objectSize > 10000):
-          #  print("Flushing GAMES")
-       ##     print("GAMES object is too big! ", objectSize)
-           # d GAMES[id] = helper,apibot;
-         ##   GAMES = {}
+    GAMES[id] = helper,apibot
     
     # Write the response
     rw = ResponseWriter(BASE_URL + "register","")
@@ -325,8 +316,6 @@ def visualize(g):
     dg = pydotplus.graph_from_dot_data(stream.getvalue())
     result = dg.write_png("visual.png")
     return result
-    #png = dg.create_png()
-    #display(Image(png))
 
 
 # Start the server
