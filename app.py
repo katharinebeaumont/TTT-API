@@ -1,25 +1,30 @@
 import json
 from flask import Flask,request,Response,render_template,current_app
 from rdflib import Graph, URIRef
-from graphhelpermethods import GraphHelperMethods
+from rdfstore import RDFStore
 from pylode import OntDoc
 import uuid
 import io
+import os
 import pydotplus
 from IPython.display import display
 from rdflib.tools.rdf2dot import rdf2dot
 from flask import Response
 from constants import HOST, PORT, BASE_URL, BOT_NAME, API_BOT_URI, GAME_ONTOLOGY, GAME_ONTOLOGY_TAG, GAME_ONTOLOGY_PREFIX
-
-
 from responsewriter import ResponseWriter
 from apibot import APIBOT
 
 GAMES = {}
 
-# Main Code
-app = Flask(__name__)
+### Start the server ###
+# Convoluted set up is to enable app testing
+def create_app():
+    app = Flask(__name__)
+    config_type = os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig')
+    app.config.from_object(config_type)
+    return app
 
+app = create_app()
 
 ### Routes ###
 
@@ -39,8 +44,8 @@ def home():
     if id:
         id = uuid.UUID(id)
         if id in GAMES:
-            helper,apibot = GAMES[id] 
-            add_links_for_active_game(helper, rw, id)
+            game_rdf_store,apibot = GAMES[id] 
+            add_links_for_active_game(game_rdf_store, rw, id)
     else:
         rw.add_form(BASE_URL + "register",method_name="POST",contentType="application/json",op="readproperty")
         rw.add_form_property(BASE_URL + "register","@id",False,True)
@@ -111,16 +116,16 @@ def register():
     # Create a new RDF graph for the game using the tic-tac-toe ontology
     g = Graph()
     g.parse(GAME_ONTOLOGY)
-    helper = GraphHelperMethods(g, GAME_ONTOLOGY_TAG, BASE_URL, API_BOT_URI, agent_opponent_uri, id)
-    apibot = APIBOT(API_BOT_URI, helper)
+    game_rdf_store = RDFStore(g, GAME_ONTOLOGY_TAG, BASE_URL, API_BOT_URI, agent_opponent_uri, id)
+    apibot = APIBOT(API_BOT_URI, game_rdf_store)
    
-    # Store the game helper (access to RDF graph) and the opponent instance against the game ID
-    GAMES[id] = helper,apibot
+    # Store the game game_rdf_store (access to RDF graph) and the opponent instance against the game ID
+    GAMES[id] = game_rdf_store,apibot
     
     # Write the response
     rw = ResponseWriter(BASE_URL + "register","")
     rw.add_link(BASE_URL + "",method_name="GET")
-    add_links_for_active_game(helper, rw, id)
+    add_links_for_active_game(game_rdf_store, rw, id)
 
     return format_response(rw)
 
@@ -146,9 +151,10 @@ def board():
     id = request.args.get('id')
     id = uuid.UUID(id)
     if id in GAMES:
-        helper,apibot = GAMES[id] 
-        add_links_for_active_game(helper, rw, id) #This adds links to free squares
-        board = helper.get_board_occupied()
+        game_rdf_store,apibot = GAMES[id] 
+        add_links_for_active_game(game_rdf_store, rw, id, False) #This adds links to free squares
+        
+        board = game_rdf_store.get_board_occupied()
         for b in board:
             rw.add_nested_field(GAME_ONTOLOGY_PREFIX + ":hasSquare",b,board[b]) #Just passing key in 
 
@@ -175,9 +181,9 @@ def result():
     id = uuid.UUID(id)
     #Is the player registered 
     if id in GAMES:
-        helper,apibot = GAMES[id] 
-        rw.add_link(helper.board,method_name="GET") 
-        winner = helper.get_winner()
+        game_rdf_store,apibot = GAMES[id] 
+        rw.add_link(game_rdf_store.board,method_name="GET") 
+        winner = game_rdf_store.get_winner()
        
         if winner:
             rw.add_field(GAME_ONTOLOGY_PREFIX + ":TicTacToeResult",winner)
@@ -186,7 +192,7 @@ def result():
 
         # Save game
         try:
-            helper.save_graph()
+            game_rdf_store.save_graph()
         except:
             print("An exception occurred saving the graph")
 
@@ -222,38 +228,43 @@ def result():
 #   Error and link to index
 @app.route('/Square<sq>', methods=["PUT"])
 def square(sq):
-
-    rw = ResponseWriter(request.url,GAME_ONTOLOGY_PREFIX + ":Square"+sq) #TODO this should be the full url
+    rw = ResponseWriter(request.url,GAME_ONTOLOGY_PREFIX + ":Square"+sq) 
     rw.add_link(BASE_URL + "",method_name="GET") #Always link to index page
     id = request.args.get('id')
     id = uuid.UUID(id)
     if id in GAMES:
         id_str = str(id)
-        helper,apibot = GAMES[id] 
-        rw.add_field(GAME_ONTOLOGY_PREFIX + ":moveTakenBy", helper.oagent)
+        game_rdf_store,apibot = GAMES[id] 
         
-        rw.add_link(helper.board,method_name="GET") 
+        rw.add_link(game_rdf_store.board,method_name="GET") 
         # Check for invalid posts
-        if helper.is_square_free(request.url):
-            helper.add_opponent_move(request.url) #TODO What is the move is invalid?
+        # Instead of using request.url for the square checking (which breaks tests),
+        # get it from the rdf store
+        square_url = game_rdf_store.square_instance_from_number(sq)
+        if game_rdf_store.is_square_free(square_url):
+
+            # Need to know if this fails
+            game_rdf_store.add_opponent_move(square_url)
+
+            rw.add_field(GAME_ONTOLOGY_PREFIX + ":moveTakenBy", game_rdf_store.oagent)
             
             #Is there a winner
-            game_over = helper.is_game_over()
+            game_over = game_rdf_store.is_game_over()
             if game_over:
                 #Make the result URL available
-                print("We have a result (after agent move)")
+                #print("We have a result (after agent move)")
                 rw.add_link(BASE_URL + "result?id=" + id_str,method_name="GET") 
             else:
                 #Now API Bot's turn
                 if apibot.make_move():
                     #Turn made, there is already a link to the board
-                    game_over = helper.is_game_over()
+                    game_over = game_rdf_store.is_game_over()
                     if game_over:
-                        print("We have a result (after apibot move)")
+                        #print("We have a result (after apibot move)")
                         rw.add_link(BASE_URL + "result?id=" + id_str,method_name="GET") 
                 else:
                     #It was a Draw: make the result URL available TODO: this code should never be called
-                    print('The game is a draw')
+                    #print('The game is a draw')
                     rw.add_link(BASE_URL + "result?id=" + id_str,method_name="GET") 
         else:
             rw.add_error("Invalid move")
@@ -271,18 +282,21 @@ def square(sq):
 # Links to:    /result
 # Forms to:    /register
 # Otherwise
-# Links to:    /Board
+# Links to:    /Board (unless this is the board response)
 # Forms to:    /Square<SquareId>    (all free squares)
-def add_links_for_active_game(helper, rw, id):
+def add_links_for_active_game(game_rdf_store, rw, id, includeBoardLink=True):
     id_str = str(id)
-    if (helper.is_game_over()):
+    if (game_rdf_store.is_game_over()):
         rw.add_link(BASE_URL + "result?id=" + id_str,method_name="GET") 
         rw.add_form(BASE_URL + "register",method_name="POST",contentType="application/json",op="readproperty")
         rw.add_form_property(BASE_URL + "register",GAME_ONTOLOGY_PREFIX + ":Agent",False,True)
     else:
-        board = helper.board
-        rw.add_link(board,method_name="GET") 
-        free_squares = helper.get_free_squares()
+        board = game_rdf_store.board
+        if (includeBoardLink):
+            rw.add_link(board,method_name="GET") 
+
+
+        free_squares = game_rdf_store.get_free_squares()
         for sq in free_squares:
             rw.add_form(str(sq),method_name="PUT",contentType="application/json",op="readproperty") 
             
@@ -299,11 +313,11 @@ def format_response(rw):
 @app.route("/dump", methods=["GET"])
 def dump():  
     for key in GAMES:
-        helper = GAMES[key] 
+        game_rdf_store = GAMES[key] 
         print("Game for ", key)
-        helper.print_game()
+        game_rdf_store.print_game()
         print("Visual for ", key)
-        result = visualize(helper.graph)
+        result = visualize(game_rdf_store.graph)
         return current_app.send_static_file('visual.png')
 
     return render_template('dump.html')

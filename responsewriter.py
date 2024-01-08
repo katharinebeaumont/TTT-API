@@ -1,4 +1,3 @@
-import json
 from constants import GAME_ONTOLOGY_PREFIX, BASE_URL, GAME_ONTOLOGY_TAG
 
 class ResponseWriter():

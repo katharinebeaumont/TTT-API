@@ -1,7 +1,7 @@
 from rdflib import Graph, Literal, URIRef, Namespace, RDF, RDFS, OWL
 from rdflib.namespace import NamespaceManager
 
-class GraphHelperMethods():
+class RDFStore():
 
     def __init__(self, graph, prefix, url, xagentplayer, oagentplayer, id):
         self.graph = graph
@@ -19,11 +19,14 @@ class GraphHelperMethods():
         nm.bind(prefix, n)
         self.ttt = n
        
+        #Assign player roles
         self.graph.add((xagentplayer, RDF.type, self.ttt.XPlayerRole))
         self.graph.add((oagentplayer, RDF.type, self.ttt.OPlayerRole))
 
+        #Create Game instance
         game_instance = URIRef(url + "Game?id="+id)
         self.game = game_instance
+       
         self.graph.add((game_instance, RDF.type, OWL.NamedIndividual))
         self.graph.add((game_instance, RDF.type, self.ttt.Game))
         self.graph.add((game_instance, self.ttt.hasID, Literal(id)))
@@ -31,10 +34,7 @@ class GraphHelperMethods():
         self.graph.add((game_instance, self.ttt.providesAgentRole, xagentplayer))
         self.graph.add((game_instance, self.ttt.providesAgentRole, oagentplayer))
         
-        #TODO: am here, adding board instance, and square instances, and pointing to these
-        # instead of converting from thing to thing... then to get the board, shoudl just query
-        # board hasSquare
-        #Board instance
+        #Create Board instance
         board_instance = URIRef(url + "Board?id="+id)
         self.board = board_instance
         self.graph.add((board_instance, RDF.type, OWL.NamedIndividual))
@@ -95,8 +95,6 @@ class GraphHelperMethods():
 
 
     def add_move(self, square, agent):
-        #If there is no first move, this is it
-        square = URIRef(square)
         if not self.get_first_move(): 
             self.graph.add((self.game,  self.ttt.firstMove, square))
         else: #Otherwise there is a previous move
@@ -122,6 +120,13 @@ class GraphHelperMethods():
         for (s, p, o) in self.graph.triples((None, RDF.type, square)):
             return s
 
+
+    def square_instance_from_number(self, num):
+        for (s, p, o) in self.graph.triples((None, RDFS.subClassOf, self.ttt.Square)):
+            square_itself = s # I.e. Square11
+            if num in str(square_itself):
+                return self.square_to_square_instance(square_itself)
+            
 
     def get_winner(self):
 
@@ -208,15 +213,15 @@ class GraphHelperMethods():
         if self.is_game_over():
             return False
         
-       # print("is " + square_url + " free?")
         free_squares = self.get_free_squares()
-
+        square_url_id = 'Square' + str(square_url).split("/Square",1)[1]
         for free_square_url in free_squares:
-            if str(free_square_url) == str(square_url):
-                #print("1 found it")
+            # Get the Square ID ... doing this because the tests set the request URL as 
+            # localhost/Square11?id=... instead of localhost:8083/Square11?id=..
+            free_square_id = 'Square' + str(free_square_url).split("/Square",1)[1]
+            if free_square_id == square_url_id:
                 return True
         if square_url in free_squares:
-            #print("2 found it")
             return True
         
         return False
@@ -239,7 +244,6 @@ class GraphHelperMethods():
             square_class = self.square_instance_to_square(square_instance)
             board[square_instance] = { RDF.type : square_class, self.ttt.moveTakenBy : agent }
 
-
         return board
     
 
@@ -256,7 +260,6 @@ class GraphHelperMethods():
 
         squares = {}         
         for row in a:
-            #print(row)
             squares[row['s']]=row['p']
         
         return squares

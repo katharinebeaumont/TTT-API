@@ -5,8 +5,10 @@ import json
 from rdflib import Graph, URIRef, Namespace, RDF, Literal
 from rdflib.namespace import NamespaceManager
 
-from graphhelpermethods import GraphHelperMethods
+from rdfstore import RDFStore
 
+# Many (ok most) of these aren't proper tests because they just print the response to the console
+# HOWEVER that's ok because this is all covered in end to end testing (in test_app.py) anyway
 class TestResponseWriter(unittest.TestCase):
 
     apiBot = URIRef("http://localhost:8083/apibot")
@@ -18,7 +20,7 @@ class TestResponseWriter(unittest.TestCase):
         # Setup 
         g = Graph()
         g.parse('TicTacToe.owl')
-        self.helper = GraphHelperMethods(g,'tic-tac-toe',self.tttgame, self.apiBot, self.agentZero, Literal("someId"))
+        self.helper = RDFStore(g,'tic-tac-toe',self.tttgame, self.apiBot, self.agentZero, Literal("someId"))
         self.helper.add_move(self.helper.ttt.Square13, self.apiBot)
         self.helper.add_move(self.helper.ttt.Square12, self.agentZero)
         self.helper.add_move(self.helper.ttt.Square11, self.apiBot)
@@ -28,10 +30,39 @@ class TestResponseWriter(unittest.TestCase):
     def test_basic(self):
         print("TEST BASIC")
         rw = ResponseWriter("http://localhost:8083","ttt:Game")
-        rw.add_link("http://localhost:8083/dump","rdfs:seeAlso")
         b = rw.build()
-        print(json.dumps(b, indent=4))
-
+        
+        # Test have "@id":"http://localhost:8083"
+        # Test have "@type":"tttGame"
+        self.assertEqual(b["@type"], "ttt:Game")
+        self.assertEqual(b["@id"], "http://localhost:8083")
+        # Test have 
+        #    "@context": {
+        #           "@vocab": "https://www.w3.org/2019/wot/hypermedia#",
+        #           "ttt": "http://localhost:8083/tic-tac-toe#",
+        #           "htv": "http://www.w3.org/2011/http#",
+        #           "wot": "https://w3c.github.io/wot-thing-description/#",
+        #           "sch": "https://schema.org/",
+        #           "links": {
+        #               "@id": "Link"
+        #           },
+        #           "forms": {
+        #             "@id": "Form"
+        #           },
+        #           "href": {
+        #             "@id": "hasTarget"
+        #           },
+        #           "rel": {
+        #             "@type": "@vocab"
+        #             "@id": "hasRelationType",
+        #           }
+        #       }
+        context_json = b["@context"]
+        self.assertEqual(context_json["@vocab"], "https://www.w3.org/2019/wot/hypermedia#")
+        self.assertEqual(context_json["ttt"],  "http://localhost:8083/tic-tac-toe#")
+        self.assertEqual(context_json["htv"], "http://www.w3.org/2011/http#")
+        self.assertEqual(context_json["wot"], "https://w3c.github.io/wot-thing-description/#")
+        self.assertEqual(context_json["sch"], "https://schema.org/")
 
     # Test - index page, not registered (link to register form)
     def test_index_page(self):
@@ -42,6 +73,38 @@ class TestResponseWriter(unittest.TestCase):
         rw.add_link("http://localhost:8083/register",method_name="GET")
         rw.add_form("http://localhost:8083/register",method_name="POST",contentType="application/json",op="readproperty")
         b = rw.build()
+
+         # Test have "@id":"http://localhost:8083"
+        # Test have "@type":"tttGame"
+        self.assertEqual(b["@type"], "ttt:Game")
+        self.assertEqual(b["@id"], "http://localhost:8083")
+        # Test have 
+        #    "@context": {
+        #           "@vocab": "https://www.w3.org/2019/wot/hypermedia#",
+        #           "ttt": "http://localhost:8083/tic-tac-toe#",
+        #           "htv": "http://www.w3.org/2011/http#",
+        #           "wot": "https://w3c.github.io/wot-thing-description/#",
+        #           "sch": "https://schema.org/",
+        #           "links": {
+        #               "@id": "Link"
+        #           },
+        #           "forms": {
+        #             "@id": "Form"
+        #           },
+        #           "href": {
+        #             "@id": "hasTarget"
+        #           },
+        #           "rel": {
+        #             "@type": "@vocab"
+        #             "@id": "hasRelationType",
+        #           }
+        #       }
+        context_json = b["@context"]
+        self.assertEqual(context_json["@vocab"], "https://www.w3.org/2019/wot/hypermedia#")
+        self.assertEqual(context_json["ttt"],  "http://localhost:8083/tic-tac-toe#")
+        self.assertEqual(context_json["htv"], "http://www.w3.org/2011/http#")
+        self.assertEqual(context_json["wot"], "https://w3c.github.io/wot-thing-description/#")
+        self.assertEqual(context_json["sch"], "https://schema.org/")
         print(json.dumps(b, indent=4))
 
 

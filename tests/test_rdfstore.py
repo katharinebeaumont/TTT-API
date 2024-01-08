@@ -2,9 +2,9 @@ import unittest
 from rdflib import Graph, URIRef, Namespace, RDF, Literal
 from rdflib.namespace import NamespaceManager
 
-from graphhelpermethods import GraphHelperMethods
+from rdfstore import RDFStore
 
-class TestGraphMethods(unittest.TestCase):
+class TestRDFStore(unittest.TestCase):
 
     apiBot = URIRef("http://localhost:8083/apibot")
     agentZero = URIRef("http://localhost:7070/agentzero")
@@ -14,7 +14,7 @@ class TestGraphMethods(unittest.TestCase):
         # Setup 
         g = Graph()
         g.parse('TicTacToe.owl')
-        self.helper = GraphHelperMethods(g,'tic-tac-toe',"http://localhost:8083/",self.apiBot, self.agentZero, Literal("someId"))
+        self.helper = RDFStore(g,'tic-tac-toe',"http://localhost:8083/",self.apiBot, self.agentZero, Literal("someId"))
 
 
     # Tests
@@ -106,8 +106,6 @@ class TestGraphMethods(unittest.TestCase):
         winner = self.helper.get_winner()
         print(winner)
         self.assertEqual(self.apiBot, winner)
-
-
 
 
     def test_get_winner_diagonal_left_right(self):
@@ -373,3 +371,14 @@ class TestGraphMethods(unittest.TestCase):
         self.helper.add_move(URIRef("http://localhost:8083/Square22?id=someId"), self.apiBot)
         self.helper.add_move(URIRef("http://localhost:8083/Square23?id=someId"), self.apiBot)
         self.assertEqual(self.helper.is_square_free(URIRef("http://localhost:8083/Square11?id=someId")), False)
+
+
+    def test_square_instance_from_number(self):
+        result = self.helper.square_instance_from_number('12')
+        self.assertEqual(result, URIRef("http://localhost:8083/Square12?id=someId"))
+
+        result = self.helper.square_instance_from_number('22')
+        self.assertEqual(result, URIRef("http://localhost:8083/Square22?id=someId"))
+
+        result = self.helper.square_instance_from_number('31')
+        self.assertEqual(result, URIRef("http://localhost:8083/Square31?id=someId"))

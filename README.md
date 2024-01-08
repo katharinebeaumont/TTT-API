@@ -14,6 +14,13 @@ This has been developed using the [anaconda3](https://anaconda.org/) environment
 Requirements are in requirements.txt
 Run ```pip install -r requirements.txt```
 
+## Test and run
+
+The script `testAndRun.sh` runs unit and server tests, then runs the application at http://localhost:8083/
+To execute, run:
+
+```flask run```
+
 ## Running the server
 
 The by default the server runs at http://127.0.0.1:5000/
@@ -24,7 +31,7 @@ To specify host and port, e.g.:
 
 ```flask run --host=localhost --port=8083```
 
-## Running tests
+## Running unit tests
 
 ```python -m unittest tests/*.py```
 
@@ -32,6 +39,9 @@ or for more specific tests
 
 ```python -m unittest tests/responsewritertests.py```
 
+## Running server tests
+
+```python -m pytest tests/*.py```
 
 ## Game Play
 
@@ -103,7 +113,7 @@ Body:
 ```
 { 
  "@id": "http://agentURL.com",
-  "@type":"ttt:Agent"
+  "@type":"ttt:Agent",
   "@context": {
     "ttt": "http://localhost:8083/tic-tac-toe#"
   }

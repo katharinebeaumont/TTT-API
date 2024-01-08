@@ -1,4 +1,4 @@
-from graphhelpermethods import GraphHelperMethods
+from rdfstore import RDFStore
 
 class APIBOT():
 
